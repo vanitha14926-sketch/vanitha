@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LexAI - AI Powered Legal Document Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        serif: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        navy: {
+                            800: '#0B192C',
+                            900: '#070F1E',
+                            950: '#030712',
+                        },
+                        accent: {
+                            blue: '#2563EB',
+                            cyan: '#06B6D4',
+                            gold: '#D97706',
+                            emerald: '#10B981',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .glass-card:hover {
+            border-color: rgba(37, 99, 235, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.2);
+        }
+        .bg-grid-pattern {
+            background-size: 36px 36px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        .glow-blue {
+            box-shadow: 0 0 50px -10px rgba(37, 99, 235, 0.25);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 8s ease-in-out infinite;
+        }
+        .view-transition {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-navy-950 text-slate-100 font-sans min-h-screen bg-grid-pattern relative overflow-x-hidden custom-scrollbar">
+
+    <!-- Background Ambient Glow Effects -->
+    <div class="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[140px] pointer-events-none animate-pulse-slow"></div>
+    <div class="fixed top-[40%] right-[-10%] w-[45vw] h-[45vw] rounded-full bg-cyan-600/10 blur-[140px] pointer-events-none"></div>
+
+    <!-- Notification Toast Element -->
+    <div id="toast" class="fixed top-6 right-6 z-50 transform translate-x-full opacity-0 transition-all duration-300 ease-in-out max-w-md w-full bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-4 flex items-center space-x-3 pointer-events-none">
+        <div id="toast-icon" class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center bg-blue-500/20 text-blue-400">
+            <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="flex-1 text-sm font-medium text-slate-200" id="toast-message">Notification message</div>
+    </div>
+
+    <!-- VIEW 1: AUTHENTICATION PAGE (Login / Sign Up) -->
+    <div id="view-auth" class="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8 relative z-10">
+        <div class="w-full max-w-5xl glass-panel rounded-3xl overflow-hidden shadow-2xl border border-slate-800 grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+            
+            <!-- Left Branding & Feature Showcase Side -->
+            <div class="lg:col-span-5 bg-gradient-to-br from-navy-900 via-slate-900 to-navy-950 p-8 sm:p-10 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-slate-800">
+                <div class="relative z-10">
+                    <div class="flex items-center space-x-3 mb-8">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <i class="fas fa-scale-balanced text-white text-lg"></i>
+                        </div>
+                        <span class="text-2xl font-bold tracking-tight text-white">LexAI</span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-4">
+                        AI-Powered Legal Automation for <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Modern Teams</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-8">
+                        Draft legally binding contracts, analyze risk redlines, and ensure compliance in seconds with fine-tuned legal AI models.
+                    </p>
+
+                    <div class="space-y-4 text-xs">
+                        <div class="flex items-center space-x-3 text-slate-300">
+                            <div class="w-6 h-6 rounded-md bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                                <i class="fas fa-check text-[10px]"></i>
+                            </div>
+                            <span>Automated NDA & Contract Drafting</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-slate-300">
+                            <div class="w-6 h-6 rounded-md bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                                <i class="fas fa-check text-[10px]"></i>
+                            </div>
+                            <span>Multi-Jurisdictional Legal Rules Engine</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-slate-300">
+                            <div class="w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <i class="fas fa-check text-[10px]"></i>
+                            </div>
+                            <span>AI Redlining & Risk Analysis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-slate-800/80 mt-8 relative z-10 flex items-center justify-between text-[11px] text-slate-500">
+                    <span>&copy; 2026 LexAI Inc.</span>
+                    <span class="flex items-center space-x-1 text-emerald-400">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>SOC2 Certified</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right Form Interface Side -->
+            <div class="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center bg-slate-950/60">
+                <div class="max-w-md w-full mx-auto">
+                    
+                    <!-- Auth Switcher Tabs -->
+                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 mb-8">
+                        <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-blue-600 transition-all shadow-md">
+                            Sign In
+                        </button>
+                        <button id="auth-tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all">
+                            Create Account
+                        </button>
+                    </div>
+
+                    <!-- Header Titles -->
+                    <div class="mb-6">
+                        <h3 id="auth-heading" class="text-xl font-bold text-white">Welcome back to LexAI</h3>
+                        <p id="auth-subheading" class="text-xs text-slate-400 mt-1">Enter your credentials to access your legal studio dashboard.</p>
+                    </div>
+
+                    <!-- Social Google Auth Button -->
+                    <button onclick="handleGoogleAuth()" class="w-full bg-slate-900 hover:bg-slate-850 border border-slate-700/80 text-slate-200 text-xs font-semibold py-3 rounded-xl transition-all flex items-center justify-center space-x-3 mb-6 shadow-sm hover:border-slate-600">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        <span>Continue with Google</span>
+                    </button>
+
+                    <div class="relative flex items-center justify-center mb-6">
+                        <div class="border-t border-slate-800 w-full"></div>
+                        <span class="bg-slate-950/80 px-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider absolute">Or work with email</span>
+                    </div>
+
+                    <!-- Email & Password Form -->
+                    <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                        <div id="field-name-group" class="hidden">
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+                            <input type="text" id="auth-name" placeholder="Alex Morgan" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Work Email</label>
+                            <input type="email" id="auth-email" required value="alex.morgan@lexfirm.com" placeholder="name@company.com" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all">
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-medium text-slate-300">Password</label>
+                                <a href="#" id="forgot-password-link" onclick="showToast('Password reset link sent to your email', 'info'); return false;" class="text-[11px] text-blue-400 hover:text-blue-300">Forgot?</a>
+                            </div>
+                            <div class="relative">
+                                <input type="password" id="auth-password" required value="SecurePass2026!" placeholder="••••••••" oninput="checkPasswordStrength(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 pr-10 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all">
+                                <button type="button" onclick="togglePasswordVisibility('auth-password', 'toggle-icon-1')" class="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 text-xs">
+                                    <i id="toggle-icon-1" class="far fa-eye"></i>
+                                </button>
+                            </div>
+
+                            <!-- Live Strength Indicator Bar (Signup mode) -->
+                            <div id="password-strength-container" class="hidden mt-2">
+                                <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden flex">
+                                    <div id="strength-bar" class="h-full w-0 transition-all duration-300 bg-red-500"></div>
+                                </div>
+                                <span id="strength-text" class="text-[10px] text-slate-400 mt-1 block">Password strength: Weak</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="auth-submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-blue-600/25 text-xs flex items-center justify-center space-x-2 mt-2">
+                            <span id="auth-btn-text">Sign In to Dashboard</span>
+                            <i id="auth-btn-spinner" class="fas fa-spinner fa-spin hidden text-xs"></i>
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: HOME DASHBOARD & LEGAL DOCUMENT STUDIO (Accessible After Login) -->
+    <div id="view-home" class="hidden min-h-screen flex-col">
+        
+        <!-- Header & Nav Bar -->
+        <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 transition-all duration-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                
+                <!-- Logo -->
+                <a href="#" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                        <i class="fas fa-scale-balanced text-white text-lg"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xl font-bold tracking-tight text-white">LexAI</span>
+                            <span class="bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">Legal AI 2.0</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 tracking-wider uppercase font-medium">Enterprise Suite</span>
+                    </div>
+                </a>
+
+                <!-- Nav Links -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <a href="#playground" class="px-3.5 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Studio Playground</a>
+                    <a href="#templates" class="px-3.5 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">Templates</a>
+                    <a href="#features" class="px-3.5 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-lg transition-colors">AI Features</a>
+                    <button onclick="toggleAssistantModal()" class="px-3.5 py-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 hover:bg-cyan-950/40 rounded-lg transition-colors flex items-center space-x-1.5">
+                        <i class="fas fa-sparkles text-xs"></i>
+                        <span>Ask AI Assistant</span>
+                    </button>
+                </nav>
+
+                <!-- Actions & Profile -->
+                <div class="flex items-center space-x-4">
+                    <!-- User Dropdown Menu -->
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center space-x-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 p-1.5 pr-3 rounded-xl transition-all focus:outline-none">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="User Avatar" class="w-8 h-8 rounded-lg object-cover ring-2 ring-blue-500/30">
+                            <div class="text-left hidden sm:block">
+                                <span id="user-display-name" class="block text-xs font-semibold text-slate-200 leading-none">Alex Morgan</span>
+                                <span class="text-[10px] text-amber-400 font-medium leading-none">General Counsel</span>
+                            </div>
+                            <i class="fas fa-chevron-down text-slate-400 text-xs ml-1"></i>
+                        </button>
+
+                        <!-- Dropdown Content -->
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-2 z-50 divide-y divide-slate-800">
+                            <div class="px-4 py-2.5">
+                                <p class="text-xs text-slate-400">Signed in as</p>
+                                <p id="user-display-email" class="text-xs font-semibold text-slate-200 truncate">alex.morgan@lexfirm.com</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="#" onclick="showToast('Loading Document History...', 'info'); return false;" class="px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 flex items-center space-x-2">
+                                    <i class="fas fa-folder-open w-4 text-slate-400"></i>
+                                    <span>Saved Documents (14)</span>
+                                </a>
+                                <a href="#" onclick="showToast('API Key Manager opened', 'info'); return false;" class="px-4 py-2 text-xs text-slate-300 hover:bg-slate-800 flex items-center space-x-2">
+                                    <i class="fas fa-key w-4 text-slate-400"></i>
+                                    <span>API Keys</span>
+                                </a>
+                            </div>
+                            <div class="py-1">
+                                <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-xs text-red-400 hover:bg-slate-800 flex items-center space-x-2">
+                                    <i class="fas fa-arrow-right-from-bracket w-4"></i>
+                                    <span>Log Out</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="relative pt-12 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <div class="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1.5 rounded-full mb-6">
+                    <span class="flex h-2 w-2 rounded-full bg-blue-400 animate-ping"></span>
+                    <span class="text-xs font-semibold text-blue-300 tracking-wide uppercase">LexAI Studio v2.6 Ready</span>
+                </div>
+                
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                    Create Legally Binding Contracts in <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-amber-300">Seconds</span>
+                </h1>
+
+                <p class="mt-4 text-sm sm:text-base text-slate-300">
+                    Type a prompt or choose a template below to draft, customize, and analyze contracts with AI compliance checking.
+                </p>
+            </div>
+
+            <!-- Hero Prompt Widget -->
+            <div class="max-w-3xl mx-auto bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-2xl shadow-2xl glow-blue mb-12">
+                <div class="flex flex-col sm:flex-row items-center gap-2">
+                    <div class="relative flex-1 w-full flex items-center">
+                        <div class="absolute left-4 text-blue-400">
+                            <i class="fas fa-sparkles text-lg"></i>
+                        </div>
+                        <input type="text" id="hero-prompt-input" 
+                            placeholder="e.g., 'Draft a Freelance Software Agreement under California law with IP transfer...'" 
+                            class="w-full bg-slate-950/80 border border-slate-800 rounded-xl py-3.5 pl-12 pr-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-all"
+                            onkeydown="if(event.key==='Enter') generateFromHeroPrompt()">
+                    </div>
+                    <button onclick="generateFromHeroPrompt()" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold px-6 py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center space-x-2 text-xs sm:text-sm whitespace-nowrap">
+                        <span>Generate Draft</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Studio Generator Workspace -->
+        <section id="playground" class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="mb-8 text-center">
+                <h2 class="text-2xl font-bold text-white">Interactive Contract Studio</h2>
+                <p class="text-slate-400 text-xs mt-1">Configure parameters on the left to see instant updates on the live preview screen.</p>
+            </div>
+
+            <!-- Tabs for Document Types -->
+            <div class="flex items-center justify-center space-x-2 mb-8 overflow-x-auto pb-2 custom-scrollbar">
+                <button onclick="selectDocType('nda')" id="tab-doc-nda" class="doc-tab-btn bg-blue-600 text-white font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 whitespace-nowrap shadow-lg">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Mutual NDA</span>
+                </button>
+                <button onclick="selectDocType('employment')" id="tab-doc-employment" class="doc-tab-btn bg-slate-800/80 text-slate-300 hover:bg-slate-800 font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fas fa-file-contract"></i>
+                    <span>Employment Contract</span>
+                </button>
+                <button onclick="selectDocType('lease')" id="tab-doc-lease" class="doc-tab-btn bg-slate-800/80 text-slate-300 hover:bg-slate-800 font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fas fa-building"></i>
+                    <span>Commercial Lease</span>
+                </button>
+                <button onclick="selectDocType('service')" id="tab-doc-service" class="doc-tab-btn bg-slate-800/80 text-slate-300 hover:bg-slate-800 font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fas fa-handshake"></i>
+                    <span>SaaS Agreement</span>
+                </button>
+            </div>
+
+            <!-- Studio Interface Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Parameter Inputs Panel -->
+                <div class="lg:col-span-5 glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-sliders text-blue-400 text-xs"></i>
+                            <h3 class="font-bold text-slate-200 text-xs uppercase tracking-wider">Contract Inputs</h3>
+                        </div>
+                        <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono">Live Engine</span>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">First Party Name (Company / Employer)</label>
+                            <input type="text" id="param-party-a" value="LexTech Innovations Inc." oninput="updateDocumentPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Second Party Name (Contractor / Employee)</label>
+                            <input type="text" id="param-party-b" value="Vanguard Capital LLC" oninput="updateDocumentPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Jurisdiction</label>
+                                <select id="param-jurisdiction" onchange="updateDocumentPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-blue-500">
+                                    <option value="State of California, USA">California, USA</option>
+                                    <option value="State of New York, USA">New York, USA</option>
+                                    <option value="England & Wales">England & Wales</option>
+                                    <option value="Republic of Singapore">Singapore</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-medium text-slate-300 mb-1">Duration</label>
+                                <select id="param-duration" onchange="updateDocumentPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-blue-500">
+                                    <option value="2 Years">2 Years</option>
+                                    <option value="3 Years">3 Years</option>
+                                    <option value="5 Years">5 Years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-medium text-slate-300 mb-1">Financial Valuation / Compensation</label>
+                            <input type="text" id="param-value" value="$150,000 USD / Retainer" oninput="updateDocumentPreview()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="pt-2">
+                            <label class="block font-medium text-slate-300 mb-2">Optional AI Protection Clauses</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center space-x-2 text-slate-400 cursor-pointer">
+                                    <input type="checkbox" id="clause-ip" checked onchange="updateDocumentPreview()" class="rounded border-slate-800 bg-slate-950 text-blue-600 focus:ring-blue-500">
+                                    <span>IP Assignment Clause</span>
+                                </label>
+                                <label class="flex items-center space-x-2 text-slate-400 cursor-pointer">
+                                    <input type="checkbox" id="clause-noncompete" checked onchange="updateDocumentPreview()" class="rounded border-slate-800 bg-slate-950 text-blue-600 focus:ring-blue-500">
+                                    <span>Non-Solicitation Provision</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800 flex gap-2">
+                        <button onclick="runAiAudit()" class="flex-1 bg-amber-600/90 hover:bg-amber-600 text-white font-semibold py-2 px-3 rounded-xl transition-all flex items-center justify-center space-x-2 text-xs">
+                            <i class="fas fa-shield-virus"></i>
+                            <span>AI Risk Audit</span>
+                        </button>
+                        <button onclick="regenerateWithAi()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold py-2 px-3 rounded-xl transition-all flex items-center justify-center space-x-2 text-xs border border-slate-700">
+                            <i class="fas fa-wand-magic-sparkles text-cyan-400"></i>
+                            <span>Refine Text</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Document Preview Output Screen -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl border border-slate-800 overflow-hidden flex flex-col h-[580px]">
+                    <div class="bg-slate-950 p-3.5 border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center space-x-3">
+                            <span id="preview-doc-title" class="font-mono text-xs text-slate-300 font-semibold truncate">MUTUAL_NDA_2026.docx</span>
+                        </div>
+                        <div id="risk-score-badge" class="flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
+                            <i class="fas fa-shield-check text-emerald-400 text-xs"></i>
+                            <span class="text-xs font-semibold text-emerald-400">Low Risk (98/100)</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 p-6 sm:p-8 bg-slate-950/60 overflow-y-auto custom-scrollbar font-serif text-slate-300 text-xs sm:text-sm leading-relaxed space-y-4" id="document-preview-body">
+                        <!-- Dynamic Text Rendered Here -->
+                    </div>
+
+                    <div class="bg-slate-950/90 p-3.5 border-t border-slate-800 flex items-center justify-between flex-wrap gap-3">
+                        <div class="text-[11px] text-slate-400 flex items-center space-x-1.5">
+                            <i class="fas fa-lock text-emerald-400"></i>
+                            <span>Encrypted Draft</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="copyDocumentToClipboard()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-700 transition-colors flex items-center space-x-1">
+                                <i class="far fa-copy"></i>
+                                <span>Copy</span>
+                            </button>
+                            <button onclick="exportDoc('pdf')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center space-x-1">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>Export PDF</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Templates Section -->
+        <section id="templates" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/80 w-full">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Library</span>
+                    <h2 class="text-2xl font-bold text-white mt-1">Verified Attorney Templates</h2>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-1 rounded-md">Corporate</span>
+                        <h3 class="text-base font-bold text-white mt-3 mb-2">Mutual Non-Disclosure Agreement</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">Standard 2-way confidentiality agreement with IP protections.</p>
+                    </div>
+                    <button onclick="selectDocType('nda'); document.getElementById('playground').scrollIntoView({behavior:'smooth'});" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2.5 rounded-xl border border-slate-700 transition-colors">Load Template</button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-md">HR & Employment</span>
+                        <h3 class="text-base font-bold text-white mt-3 mb-2">Executive Employment Contract</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">Executive compensation, stock option vesting, and severance terms.</p>
+                    </div>
+                    <button onclick="selectDocType('employment'); document.getElementById('playground').scrollIntoView({behavior:'smooth'});" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2.5 rounded-xl border border-slate-700 transition-colors">Load Template</button>
+                </div>
+
+                <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-1 rounded-md">SaaS</span>
+                        <h3 class="text-base font-bold text-white mt-3 mb-2">Master Services Agreement (MSA)</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">Software subscription SLA terms, liability caps, and data privacy.</p>
+                    </div>
+                    <button onclick="selectDocType('service'); document.getElementById('playground').scrollIntoView({behavior:'smooth'});" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-2.5 rounded-xl border border-slate-700 transition-colors">Load Template</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-navy-950 border-t border-slate-800/80 py-8 text-xs text-slate-500 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
+                <p>&copy; 2026 LexAI Inc. Multi-Page Legal Dashboard Platform.</p>
+                <div class="flex space-x-4 mt-2 sm:mt-0">
+                    <a href="#" onclick="showToast('Privacy Policy', 'info'); return false;" class="hover:text-slate-300">Privacy</a>
+                    <a href="#" onclick="showToast('Terms of Service', 'info'); return false;" class="hover:text-slate-300">Terms</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating AI Legal Assistant Drawer Widget -->
+    <div id="ai-assistant-modal" class="fixed bottom-6 right-6 z-50 w-full max-w-xs sm:max-w-sm bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex-col hidden transition-all">
+        <div class="bg-slate-950 p-3.5 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-sparkles text-blue-400 text-xs"></i>
+                <h4 class="text-xs font-bold text-slate-100">LexAI Legal Assistant</h4>
+            </div>
+            <button onclick="toggleAssistantModal()" class="text-slate-400 hover:text-white text-xs">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+        <div id="chat-messages" class="p-3 space-y-2.5 h-64 overflow-y-auto custom-scrollbar text-xs">
+            <div class="bg-slate-800/80 p-2.5 rounded-xl text-slate-300 border border-slate-700/50">
+                Hello! Ask me any legal parameter question regarding NDAs, employment law, or jurisdiction clauses.
+            </div>
+        </div>
+        <div class="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center space-x-2">
+            <input type="text" id="chat-input" placeholder="Type a legal prompt..." onkeydown="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500">
+            <button onclick="sendChatMessage()" class="bg-blue-600 hover:bg-blue-500 text-white p-1.5 rounded-lg transition-colors">
+                <i class="fas fa-paper-plane text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Application Global State
+        let authMode = 'login'; // 'login' or 'signup'
+        let currentUser = null;
+        let currentDocType = 'nda';
+
+        // Initialize state on window load
+        window.onload = function() {
+            updateDocumentPreview();
+        };
+
+        // Switch between Login and Signup tabs
+        function switchAuthTab(mode) {
+            authMode = mode;
+            const loginBtn = document.getElementById('auth-tab-login');
+            const signupBtn = document.getElementById('auth-tab-signup');
+            const heading = document.getElementById('auth-heading');
+            const subheading = document.getElementById('auth-subheading');
+            const nameGroup = document.getElementById('field-name-group');
+            const strengthContainer = document.getElementById('password-strength-container');
+            const btnText = document.getElementById('auth-btn-text');
+
+            if (mode === 'signup') {
+                loginBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all";
+                signupBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-blue-600 transition-all shadow-md";
+                heading.textContent = "Create your LexAI Account";
+                subheading.textContent = "Start generating legally binding AI contracts today.";
+                nameGroup.classList.remove('hidden');
+                strengthContainer.classList.remove('hidden');
+                btnText.textContent = "Create Free Account";
+            } else {
+                signupBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all";
+                loginBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-blue-600 transition-all shadow-md";
+                heading.textContent = "Welcome back to LexAI";
+                subheading.textContent = "Enter your credentials to access your legal studio dashboard.";
+                nameGroup.classList.add('hidden');
+                strengthContainer.classList.add('hidden');
+                btnText.textContent = "Sign In to Dashboard";
+            }
+        }
+
+        // Toggle password view
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'far fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'far fa-eye';
+            }
+        }
+
+        // Live password strength logic
+        function checkPasswordStrength(val) {
+            if (authMode !== 'signup') return;
+            const bar = document.getElementById('strength-bar');
+            const text = document.getElementById('strength-text');
+            
+            let score = 0;
+            if (val.length >= 8) score += 33;
+            if (/[A-Z]/.test(val)) score += 33;
+            if (/[0-9!@#$%^&*]/.test(val)) score += 34;
+
+            bar.style.width = score + '%';
+            if (score <= 33) {
+                bar.className = 'h-full transition-all duration-300 bg-red-500';
+                text.textContent = 'Password strength: Weak';
+            } else if (score <= 66) {
+                bar.className = 'h-full transition-all duration-300 bg-amber-500';
+                text.textContent = 'Password strength: Medium';
+            } else {
+                bar.className = 'h-full transition-all duration-300 bg-emerald-500';
+                text.textContent = 'Password strength: Strong';
+            }
+        }
+
+        // Form Submit Handler
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const nameInput = document.getElementById('auth-name').value;
+            const name = (authMode === 'signup' && nameInput) ? nameInput : "Alex Morgan";
+
+            setAuthLoading(true);
+
+            setTimeout(() => {
+                setAuthLoading(false);
+                currentUser = { name: name, email: email };
+                completeLogin();
+            }, 1200);
+        }
+
+        // Google Authentication Handler
+        function handleGoogleAuth() {
+            showToast("Connecting to Google OAuth...", "info");
+            setTimeout(() => {
+                currentUser = { name: "Alex Morgan", email: "a.morgan@gmail.com" };
+                completeLogin();
+            }, 1000);
+        }
+
+        // Login Completion State Transition
+        function completeLogin() {
+            document.getElementById('user-display-name').textContent = currentUser.name;
+            document.getElementById('user-display-email').textContent = currentUser.email;
+
+            showToast(`Welcome back, ${currentUser.name}! Opening Studio...`, "success");
+
+            // Hide Auth view, Show Home Dashboard View
+            document.getElementById('view-auth').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-home').classList.add('flex');
+            window.scrollTo(0, 0);
+        }
+
+        // Logout Handler
+        function handleLogout() {
+            currentUser = null;
+            toggleUserDropdown();
+            showToast("Logged out successfully.", "info");
+
+            // Hide Home view, Show Auth View
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('flex');
+            document.getElementById('view-auth').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function setAuthLoading(isLoading) {
+            const btnText = document.getElementById('auth-btn-text');
+            const spinner = document.getElementById('auth-btn-spinner');
+            const btn = document.getElementById('auth-submit-btn');
+
+            if (isLoading) {
+                spinner.classList.remove('hidden');
+                btn.disabled = true;
+                btn.classList.add('opacity-80');
+            } else {
+                spinner.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-80');
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Document Studio Selection Functions
+        function selectDocType(type) {
+            currentDocType = type;
+            const buttons = document.querySelectorAll('.doc-tab-btn');
+            buttons.forEach(btn => {
+                btn.className = "doc-tab-btn bg-slate-800/80 text-slate-300 hover:bg-slate-800 font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 whitespace-nowrap";
+            });
+
+            const activeBtn = document.getElementById(`tab-doc-${type}`);
+            if (activeBtn) {
+                activeBtn.className = "doc-tab-btn bg-blue-600 text-white font-medium text-xs sm:text-sm px-5 py-2.5 rounded-xl transition-all flex items-center space-x-2 whitespace-nowrap shadow-lg";
+            }
+
+            if (type === 'nda') {
+                document.getElementById('preview-doc-title').textContent = "MUTUAL_NDA_2026.docx";
+            } else if (type === 'employment') {
+                document.getElementById('preview-doc-title').textContent = "EMPLOYMENT_AGREEMENT_2026.docx";
+            } else if (type === 'lease') {
+                document.getElementById('preview-doc-title').textContent = "LEASE_AGREEMENT_2026.docx";
+            } else if (type === 'service') {
+                document.getElementById('preview-doc-title').textContent = "SAAS_MSA_CONTRACT_2026.docx";
+            }
+
+            updateDocumentPreview();
+            showToast(`Loaded ${type.toUpperCase()} contract template`, "info");
+        }
+
+        function updateDocumentPreview() {
+            const partyA = document.getElementById('param-party-a').value || '[Party A]';
+            const partyB = document.getElementById('param-party-b').value || '[Party B]';
+            const jurisdiction = document.getElementById('param-jurisdiction').value;
+            const duration = document.getElementById('param-duration').value;
+            const val = document.getElementById('param-value').value;
+
+            const includeIP = document.getElementById('clause-ip').checked;
+            const includeNonCompete = document.getElementById('clause-noncompete').checked;
+
+            const bodyContainer = document.getElementById('document-preview-body');
+
+            let content = `
+                <h2 class="text-center font-bold text-slate-100 text-sm sm:text-base mb-4 tracking-wide uppercase">${currentDocType.replace('_', ' ')} LEGAL AGREEMENT</h2>
+                <p class="mb-3">This legal agreement is made effective as of <strong>${new Date().toLocaleDateString()}</strong> by and between:</p>
+                <p class="mb-2 pl-3 border-l-2 border-blue-500 text-slate-200"><strong>First Party:</strong> ${partyA}</p>
+                <p class="mb-4 pl-3 border-l-2 border-cyan-500 text-slate-200"><strong>Second Party:</strong> ${partyB}</p>
+                
+                <h3 class="font-bold text-slate-200 mt-4 mb-1">1. PURPOSE & FINANCIAL CONSIDERATION</h3>
+                <p class="mb-3">The parties agree to engage under an evaluated contract valuation of <strong>${val}</strong> under governing standards.</p>
+
+                <h3 class="font-bold text-slate-200 mt-4 mb-1">2. DURATION & JURISDICTION</h3>
+                <p class="mb-3">This contract shall remain active for a duration of <strong>${duration}</strong> under the jurisdiction of the <strong>${jurisdiction}</strong>.</p>
+
+                ${includeIP ? `
+                <h3 class="font-bold text-slate-200 mt-4 mb-1 text-blue-300">3. INTELLECTUAL PROPERTY ASSIGNMENT</h3>
+                <p class="mb-3 text-slate-300 bg-blue-950/20 p-2.5 rounded border border-blue-900/30">All work product, discoveries, patents, and software created by ${partyB} under this agreement shall belong exclusively to ${partyA}.</p>
+                ` : ''}
+
+                ${includeNonCompete ? `
+                <h3 class="font-bold text-slate-200 mt-4 mb-1 text-cyan-300">4. NON-SOLICITATION COVENANT</h3>
+                <p class="mb-3 text-slate-300 bg-cyan-950/20 p-2.5 rounded border border-cyan-900/30">During the term and for 12 months thereafter, ${partyB} agrees not to solicit employees or clients of ${partyA}.</p>
+                ` : ''}
+            `;
+
+            bodyContainer.innerHTML = content;
+        }
+
+        function runAiAudit() {
+            showToast("Running LexAI risk analysis across database...", "info");
+            setTimeout(() => {
+                showToast("Audit complete: Low liability risks detected (98/100).", "success");
+            }, 1000);
+        }
+
+        function regenerateWithAi() {
+            showToast("AI refining text for jurisdiction...", "info");
+            setTimeout(() => {
+                updateDocumentPreview();
+                showToast("Contract text refined!", "success");
+            }, 800);
+        }
+
+        function generateFromHeroPrompt() {
+            const prompt = document.getElementById('hero-prompt-input').value;
+            if (!prompt) {
+                showToast("Please enter a legal prompt first!", "error");
+                return;
+            }
+            showToast("Processing prompt into legal structure...", "info");
+            setTimeout(() => {
+                document.getElementById('playground').scrollIntoView({ behavior: 'smooth' });
+                showToast("Draft ready in Studio Playground!", "success");
+            }, 1000);
+        }
+
+        function copyDocumentToClipboard() {
+            const text = document.getElementById('document-preview-body').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Contract copied to clipboard!", "success");
+            }).catch(() => {
+                showToast("Copied to clipboard", "success");
+            });
+        }
+
+        function exportDoc(type) {
+            showToast(`Generating file...`, "info");
+            setTimeout(() => {
+                showToast(`Downloaded contract as .${type.toUpperCase()}`, "success");
+            }, 1200);
+        }
+
+        function toggleAssistantModal() {
+            const modal = document.getElementById('ai-assistant-modal');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const val = input.value.trim();
+            if (!val) return;
+
+            const container = document.getElementById('chat-messages');
+            const userMsg = document.createElement('div');
+            userMsg.className = "bg-blue-600 text-white p-2.5 rounded-xl ml-auto max-w-[85%] text-xs";
+            userMsg.textContent = val;
+            container.appendChild(userMsg);
+
+            input.value = '';
+
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = "bg-slate-800/80 p-2.5 rounded-xl text-slate-300 max-w-[85%] border border-slate-700/50 text-xs";
+                botMsg.textContent = "Based on general legal principles, ensure indemnity clauses explicitly specify maximum liability caps.";
+                container.appendChild(botMsg);
+                container.scrollTop = container.scrollHeight;
+            }, 700);
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMessage.textContent = message;
+
+            if (type === 'success') {
+                toastIcon.className = "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500/20 text-emerald-400";
+                toastIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            } else if (type === 'error') {
+                toastIcon.className = "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-400";
+                toastIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+            } else {
+                toastIcon.className = "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-blue-500/20 text-blue-400";
+                toastIcon.innerHTML = '<i class="fas fa-info-circle"></i>';
+            }
+
+            toast.classList.remove('translate-x-full', 'opacity-0');
+            toast.classList.add('translate-x-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-full', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
